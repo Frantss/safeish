@@ -1,170 +1,153 @@
 <h1 align="center">Safe-ish</h1>
 
 <div align="center">
-  <a href="https://bundlejs.com/?q=safeish" >
-    <img src="https://deno.bundlejs.com/badge?q=safeish@0.1.0" />
+  <a href="https://www.npmjs.com/package/safeish">
+    <img alt="npm" src="https://img.shields.io/npm/v/safeish" />
   </a>
-
+  <a href="https://jsr.io/@frantss/safeish">
+    <img alt="JSR" src="https://jsr.io/badges/@frantss/safeish" />
+  </a>
+  <a href="https://bundlejs.com/?q=safeish">
+    <img alt="bundle size" src="https://deno.bundlejs.com/badge?q=safeish" />
+  </a>
   <a href="https://github.com/frantss/safeish/blob/main/LICENSE">
-    <img alt="MIT License" src="https://img.shields.io/github/license/frantss/safeish?logo=open-source-initiative" />
+    <img alt="MIT License" src="https://img.shields.io/github/license/frantss/safeish" />
   </a>
 </div>
 
-<h2>Safe-ish error handling.</h2>
+<p align="center">Typed, exhaustive error handling for TypeScript, without <code>try</code>/<code>catch</code>.</p>
 
-A lightweight TypeScript library for robust error handling using a Result-like pattern. It helps you safely execute functions, catch exceptions gracefully, and work with predictable success (`SafeishResult`) and error (`SafeishError`) types, avoiding runtime crashes from unhandled exceptions.
-
-## Why `safeish`?
-
--   **Prevent Crashes:** Wrap functions with `safeish` to automatically catch thrown exceptions and convert them into structured `SafeishError` objects.
--   **Explicit Error Handling:** Functions return either a success (`SafeishResult`) or an error (`SafeishError`), making potential failure points explicit in the type system.
--   **Structured Errors:** Define consistent error types with unique codes, context-aware messages, and optional side effects (like logging) using `defineError`.
--   **Reduce Boilerplate:** Avoid repetitive `try...catch` blocks for expected and unexpected errors.
-
+Functions return either a **result** (`{ ok: true, data }`) or an **error** (`{ ok: false, error: { code, context, message } }`). Every error code a function can return shows up in its return type, so the compiler tells you which failures you still have to handle. Exceptions thrown inside a wrapped function come back as an error too, instead of crashing the caller.
 
 ## Installation
-
-With npm:
 
 ```bash
 npm install safeish
 ```
 
-With any other package manager:
-
 ```bash
-# pnpm
 pnpm add safeish
-
-# yarn
 yarn add safeish
-
-# bun
 bun add safeish
-
-# jsr
 npx jsr add @frantss/safeish
 ```
 
 ## Usage
 
+### 1. Define your errors
+
+`defineError` returns a builder. The argument type of `message` becomes the error's **context**: the data you attach to that error and read back when handling it.
+
 ```typescript
-import { safeish, safeish_defineError, safeish_result } from 'safeish/prefixed';
+import { defineError, result, safeish } from 'safeish';
 
-// define your errors
 const errors = {
-  greater_than_50: safeish_defineError({
-    code: 'greater_than_50',
-    // you can specified a required context for the error, this can be used for building the message or handling the error
-    message: (context: number) => `Value ${context} is greater than 50`,
+  tooLarge: defineError({
+    code: 'too_large',
+    message: (value: number) => `${value} is larger than 100`,
   }),
-
-  greater_than_65: safeish_defineError({ // this
-    code: 'greater_than_65', // this
-    message: (context: number) => `Value ${context} is greater than 65`,
-    
-  }),
-
-  greater_than_80: safeish_defineError({
-    code: 'greater_than_80',
-    message: () => 'Value is greater than 80',
-    // you can also specify an effect to be called when the error is created
-    effect: () => { // arguments are the same as in message
-      console.log('effect');
-    },
+  negative: defineError({
+    code: 'negative',
+    message: () => 'Value must be positive',
+    // optional, runs every time this error is created
+    effect: () => console.warn('negative value'),
   }),
 };
+```
 
-// you can access the error builder's code, context schema, and message builder if needed
-errors.greater_than_50.code;
-errors.greater_than_50.message;
-errors.greater_than_50.$context; // you also have access to a type-only property to easily reference the context type
+### 2. Return results and errors
 
-const someFunctionThatMightFail = safeish(() => {
-  const value = Math.random();
+Wrap the function with `safeish`. Return an error builder's output for failures and `result(...)` for success.
 
-  // whenever you get to an error case, return the corresponding error instead of throwing or returning void or undefined
-  // note that calling the error builder will add a sentry breadcrumb, this will be useful for debugging
-  if (value > 0.5) return errors.greater_than_50(value);
-  if (value > 0.8) return errors.greater_than_80(); // creating this error will trigger the effect
+```typescript
+const parse = safeish((input: string) => {
+  const value = Number(input);
 
-  // for success cases use safe_result, which will wrap the data in a Safe_Result object
-  return safeish_result(value);
+  if (value < 0) return errors.negative();
+  if (value > 100) return errors.tooLarge(value);
+
+  return result(value);
 });
+```
 
-const result = someFunctionThatMightFail();
+### 3. Handle them
 
-// you can handle error and success cases separately by just asserting the value of ok
-if (result.ok) {
-  // handle success
-  result.data; // number
+Check `ok`, then narrow on `error.code`. Each branch gets the right `context` type.
+
+```typescript
+const parsed = parse('150');
+
+if (parsed.ok) {
+  parsed.data; // number
+} else if (parsed.error.code === 'too_large') {
+  parsed.error.context; // number
+} else if (parsed.error.code === 'negative') {
+  parsed.error.context; // undefined
 } else {
-  // handle error
-  result.error.code; // 'greater_than_50' | 'greater_than_80' | '~unhandled'
-  result.error.message; // string
-
-  // you can handle each error case separately
-  if (result.error.code === 'greater_than_50') {
-    result.error.context; // number
-  } else if (result.error.code === 'greater_than_80') {
-    result.error.context; // undefined
-  } else {
-    // handle any unhandled error
-    result.error.code; // '~unhandled'
-    result.error.context; // unknown
-  }
+  parsed.error.code; // '~unhandled', something threw
+  parsed.error.context; // unknown, the thrown value
 }
 ```
 
-### With ts-pattern
+### Exhaustive matching with ts-pattern
 
-Safe-ish works great when paired with [ts-pattern](https://github.com/gvergnaud/ts-pattern), a pattern matching library for TypeScript.
-It allows you to easily ensure you are handling all possible errors exhaustively.
+With [ts-pattern](https://github.com/gvergnaud/ts-pattern), `.exhaustive()` fails to compile until every error code is handled.
 
 ```typescript
-const result = someFunctionThatMightFail();
+import { match } from 'ts-pattern';
 
-match(result)
-  .with({ ok: true }, (data) => {
-    // handle success
-  })
-  .with({ error: { code: 'greater_than_50' } }, (error) => {
-    // handle error
-    error.error.context; // number
-  })
-  .with({ error: { code: 'greater_than_80' } }, (error) => {
-    // handle error
-    error.error.context; // undefined
-  })
-  .with({ error: { code: '~unhandled' } }, (error) => {
-    // handle any unhandled error
-    error.error.context; // unknown
+match(parse('150'))
+  .with({ ok: true }, ({ data }) => data)
+  .with({ error: { code: 'too_large' } }, ({ error }) => error.context)
+  .with({ error: { code: 'negative' } }, () => 0)
+  .with({ error: { code: '~unhandled' } }, ({ error }) => {
+    throw error.context;
   })
   .exhaustive();
 ```
 
+### Custom unhandled error
+
+By default, a thrown exception becomes an error with code `~unhandled`. Pass an error definition as the second argument to `safeish` to use your own instead.
+
+```typescript
+const unexpected = defineError({
+  code: 'unexpected',
+  message: (thrown: unknown) => `Unexpected failure: ${String(thrown)}`,
+});
+
+const parseOrReport = safeish((input: string) => {
+  // ...
+  return result(Number(input));
+}, unexpected);
+```
+
 ## API
 
-### `defineError`
+| Export | Signature | Description |
+| --- | --- | --- |
+| `defineError` | `({ code, message, effect? }) => ErrorDefinition` | Creates an error builder. The builder also exposes `code`, `message`, and a type-only `$context`. |
+| `result` | `(data) => SafeishResult<Data>` | Creates a success value. |
+| `error` | `(code, context, message) => SafeishError<Code, Context>` | Creates an error without a definition. Prefer `defineError`, which keeps codes consistent and runs effects. |
+| `safeish` | `(fn, unhandled?) => (...args) => Output` | Wraps a function that returns results or errors, and converts anything it throws into an unhandled error. |
+| `unhandledCode` | `'~unhandled'` | The default code for thrown exceptions. |
 
-Defines a reusable blueprint for a specific error type, including its unique code, context-aware message generation function, and optional side effect function (e.g., for logging).
+Types: `SafeishResult<Data>`, `SafeishError<Code, Context>`, `SafeishErrorDefinition<Code, Context>`.
 
-### `result`
+### Prefixed exports
 
-Creates a `SafeishResult` object representing a successful outcome ("Ok"), wrapping the success payload.
+`safeish/prefixed` exports the same functions as `safeish_defineError`, `safeish_result`, `safeish_error`, `safeish_safe`, and `safeish_unhandledCode`. They're useful when names like `error` and `result` would collide with your own.
 
-### `error`
+```typescript
+import { safeish_defineError, safeish_result, safeish_safe } from 'safeish/prefixed';
+```
 
-Creates an ad-hoc `SafeishError` object representing a failure ("Err"). Prefer using the factory function returned by `defineError` for consistency and to automatically trigger side effects.
+## Limitations
 
-### `safeish`
-
-Wraps a function to provide safe execution. It catches any exceptions thrown by the wrapped function and maps them to a specified error definition, ensuring the function always returns a Promise resolving to a `SafeishResult` or `SafeishError`.
-
+- `safeish` wraps synchronous functions only.
+- `effect` may return a promise, but it isn't awaited.
 
 ## Inspirations
-
-This library was inspired by the following projects:
 
 - [neverthrow](https://github.com/supermacro/neverthrow)
 - [ts-results](https://github.com/vultix/ts-results)
