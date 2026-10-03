@@ -1,14 +1,13 @@
 import { match } from 'ts-pattern';
-import { safeish_defineError, safeish_result } from '~/entries/prefixed';
-import { safeish } from '~/src/safeish';
+import { defineError, result, safeish } from '~/entries/index';
 
 const errors = {
-  greater_than_50: safeish_defineError({
+  greater_than_50: defineError({
     code: 'greater_than_50',
     message: (context: number) => `Value ${context} is greater than 50`,
   }),
 
-  greater_than_80: safeish_defineError({
+  greater_than_80: defineError({
     code: 'greater_than_80',
     message: () => 'Value is greater than 80',
   }),
@@ -23,12 +22,12 @@ const someFunctionThatMightFail = safeish(() => {
   if (value > 0.8) return errors.greater_than_80();
 
   // for success cases use safe_result, which will wrap the data in a Safe_Result object
-  return safeish_result(value);
+  return result(value);
 });
 
-const result = someFunctionThatMightFail();
+const outcome = someFunctionThatMightFail();
 
-match(result)
+match(outcome)
   .with({ ok: true }, (data) => {
     // handle success
   })

@@ -1,8 +1,8 @@
 import { assertType, describe, expect, it, test, vi } from 'vitest';
-import { safeish_defineError } from '~/entries/prefixed';
+import { defineError } from '~/entries/index';
 
 it('should return expected types when message lacks a context argument', () => {
-  const error = safeish_defineError({
+  const error = defineError({
     code: 'code',
     message: () => 'message',
   });
@@ -16,7 +16,7 @@ it('should return expected types when message lacks a context argument', () => {
 });
 
 it('should return expected types when message has a context argument', () => {
-  const error = safeish_defineError({
+  const error = defineError({
     code: 'code',
     message: (context: { message: string }) => context.message,
   });
@@ -30,7 +30,7 @@ it('should return expected types when message has a context argument', () => {
 });
 
 test('defined error should return expected error', () => {
-  const error = safeish_defineError({
+  const error = defineError({
     code: 'code',
     message: () => 'message',
   });
@@ -45,7 +45,7 @@ test('defined error should return expected error', () => {
 });
 
 test('defined error should return expected error with context', () => {
-  const error = safeish_defineError({
+  const error = defineError({
     code: 'code',
     message: (context: { message: string }) => context.message,
   });
@@ -63,7 +63,7 @@ describe('effect', () => {
   it('should call the effect when error is created', () => {
     const effect = vi.fn();
 
-    const builder = safeish_defineError({
+    const builder = defineError({
       code: 'code',
       message: () => 'message',
       effect,
@@ -77,7 +77,7 @@ describe('effect', () => {
   it('should call the effect each time error is created', () => {
     const effect = vi.fn();
 
-    const builder = safeish_defineError({
+    const builder = defineError({
       code: 'code',
       message: () => 'message',
       effect,
@@ -93,7 +93,7 @@ describe('effect', () => {
   it('should not call the effect when the error builder is created', () => {
     const effect = vi.fn();
 
-    const builder = safeish_defineError({
+    const builder = defineError({
       code: 'code',
       message: () => 'message',
       effect,

@@ -1,28 +1,28 @@
 import { assertType, expect, it } from 'vitest';
-import { safeish_error } from '~/entries/prefixed';
+import { error } from '~/entries/index';
 import type { SafeishError } from '~/src/types';
 
 it('should return expected types', () => {
-  const error = safeish_error('code', { a: 1 }, 'message');
+  const instance = error('code', { a: 1 }, 'message');
 
-  assertType<false>(error.ok);
+  assertType<false>(instance.ok);
 
-  assertType<string>(error.error.code);
-  assertType<'code'>(error.error.code);
+  assertType<string>(instance.error.code);
+  assertType<'code'>(instance.error.code);
 
-  assertType<string>(error.error.message);
+  assertType<string>(instance.error.message);
 
-  assertType<{ a: number }>(error.error.context);
+  assertType<{ a: number }>(instance.error.context);
 
-  assertType<SafeishError<'code', { a: number }>>(error);
+  assertType<SafeishError<'code', { a: number }>>(instance);
 });
 
 it('should return expected error', () => {
-  const error = safeish_error('code', { a: 1 }, 'message');
+  const instance = error('code', { a: 1 }, 'message');
 
-  expect(error.ok).toBe(false);
+  expect(instance.ok).toBe(false);
 
-  expect(error.error.code).toBe('code');
-  expect(error.error.message).toBe('message');
-  expect(error.error.context.a).toBe(1);
+  expect(instance.error.code).toBe('code');
+  expect(instance.error.message).toBe('message');
+  expect(instance.error.context.a).toBe(1);
 });

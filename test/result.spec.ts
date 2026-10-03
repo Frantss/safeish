@@ -1,21 +1,21 @@
 import { assertType, expect, it } from 'vitest';
-import { safeish_result } from '~/entries/prefixed';
+import { result } from '~/entries/index';
 import type { SafeishResult } from '~/src/types';
 
 it('should return expected types', () => {
-  const result = safeish_result({ a: 1 });
+  const instance = result({ a: 1 });
 
-  assertType<true>(result.ok);
+  assertType<true>(instance.ok);
 
-  assertType<{ a: number }>(result.data);
+  assertType<{ a: number }>(instance.data);
 
-  assertType<SafeishResult<{ a: number }>>(result);
+  assertType<SafeishResult<{ a: number }>>(instance);
 });
 
 it('should return expected result', () => {
-  const error = safeish_result({ a: 1 });
+  const instance = result({ a: 1 });
 
-  expect(error.ok).toBe(true);
+  expect(instance.ok).toBe(true);
 
-  expect(error.data.a).toBe(1);
+  expect(instance.data.a).toBe(1);
 });

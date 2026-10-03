@@ -53,11 +53,9 @@
 
 ## Writing code
 
-- The public surface has two entry points, kept in parity:
-  `entries/index.ts` re-exports `src/` as-is, and `entries/prefixed.ts`
-  re-exports each runtime value as `safeish_<name>`. A new public value goes in
-  both. A new entry point also needs `package.json` `exports`, `jsr.json`
-  `exports`, and `tsdown.config.ts` `entry`.
+- The public surface is the single entry point `entries/index.ts`, which
+  re-exports `src/`. A new entry point also needs `package.json` `exports`,
+  `jsr.json` `exports`, and `tsdown.config.ts` `entry`.
 - Import across modules with the `~/src/*` and `~/entries/*` aliases.
 - Public types use the `Safeish` prefix and live in `src/types.ts`.
 - Tests live in `test/*.spec.ts` and import through the entry points, as users

@@ -134,14 +134,6 @@ const parseOrReport = safeish((input: string) => {
 
 Types: `SafeishResult<Data>`, `SafeishError<Code, Context>`, `SafeishErrorDefinition<Code, Context>`.
 
-### Prefixed exports
-
-`safeish/prefixed` exports the same functions as `safeish_defineError`, `safeish_result`, `safeish_error`, `safeish_safe`, and `safeish_unhandledCode`. They're useful when names like `error` and `result` would collide with your own.
-
-```typescript
-import { safeish_defineError, safeish_result, safeish_safe } from 'safeish/prefixed';
-```
-
 ## Limitations
 
 - `safeish` wraps synchronous functions only.

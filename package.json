@@ -27,16 +27,6 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./prefixed": {
-      "import": {
-        "types": "./dist/prefixed.d.ts",
-        "default": "./dist/prefixed.js"
-      },
-      "require": {
-        "types": "./dist/prefixed.d.cts",
-        "default": "./dist/prefixed.cjs"
-      }
-    },
     "./package.json": "./package.json"
   },
   "scripts": {
