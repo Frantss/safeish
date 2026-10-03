@@ -34,7 +34,7 @@
     "check-exports": "attw --pack . --profile node16",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "prepublishOnly": "bun run build && bun run check-exports",
+    "prepublishOnly": "pnpm build && pnpm check-exports",
     "version": "changeset",
     "release": "changeset version && changeset publish",
     "test": "vitest",
@@ -49,6 +49,7 @@
   },
   "author": "Frantss <frantss.bongiovanni@gmail.com>",
   "license": "MIT",
+  "packageManager": "pnpm@12.5.1",
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
     "@biomejs/biome": "1.9.4",

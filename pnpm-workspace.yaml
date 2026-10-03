@@ -1,0 +1,6 @@
+allowBuilds:
+  '@biomejs/biome': false
+  esbuild: false
+  rolldown: false
+overrides:
+  fflate: 0.8.2

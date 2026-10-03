@@ -15,7 +15,7 @@
   and continue.
 - Treat branches, installs, deletions, and servers as side effects.
   Proceed when the request implies a necessary, reversible action. Ask for
-  consent in other cases. Publishing (`bun run release`, `npx jsr publish`) is
+  consent in other cases. Publishing (`pnpm release`, `npx jsr publish`) is
   irreversible: run it only on an explicit request.
 
 ## Proposing solutions
@@ -65,12 +65,12 @@
 ## Done
 
 - Run checks proportional to the change and report their exact outcome:
-  - `bun run lint` (Biome; `bun run lint:fix` to format).
-  - `bunx vitest run` — `bun run test` starts watch mode in a terminal. CI does
+  - `pnpm lint` (Biome; `pnpm lint:fix` to format).
+  - `pnpm vitest run` — `pnpm test` starts watch mode in a terminal. CI does
     not run tests, so run them locally.
-  - `bun run build && bun run check-exports` for changes to entries, exports, or
+  - `pnpm build && pnpm check-exports` for changes to entries, exports, or
     build config.
-- A user-facing change needs a changeset (`bunx changeset`) choosing the semver
+- A user-facing change needs a changeset (`pnpm changeset`) choosing the semver
   bump. Changesets does not bump `jsr.json`; keep its `version` equal to
   `package.json` when versioning.
 - Include failure output and name skipped checks. Separate verified behavior
