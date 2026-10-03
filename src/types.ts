@@ -17,10 +17,7 @@ export type SafeishError<Code extends string, Context> = {
 /**
  * Represents the definition or blueprint for a specific error type.
  */
-export type SafeishErrorDefinition<
-  Code extends string,
-  Context,
-> = Context extends undefined
+export type SafeishErrorDefinition<Code extends string, Context> = Context extends undefined
   ? {
       (): SafeishError<Code, Context>;
       code: Code;

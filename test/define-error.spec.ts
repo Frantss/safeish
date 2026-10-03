@@ -1,4 +1,4 @@
-import { assertType, describe, expect, it, test, vi } from 'vitest';
+import { assertType, describe, expect, it, test, vi } from 'vite-plus/test';
 import { defineError } from '~/entries/index';
 
 it('should return expected types when message lacks a context argument', () => {

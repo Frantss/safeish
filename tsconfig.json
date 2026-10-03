@@ -17,8 +17,6 @@
 
     "module": "ESNext",
     "declaration": true,
-
-    "baseUrl": ".",
     "paths": {
       "~/src/*": ["./src/*"],
       "~/entries/*": ["./entries/*"]

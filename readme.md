@@ -124,13 +124,13 @@ const parseOrReport = safeish((input: string) => {
 
 ## API
 
-| Export | Signature | Description |
-| --- | --- | --- |
-| `defineError` | `({ code, message, effect? }) => ErrorDefinition` | Creates an error builder. The builder also exposes `code`, `message`, and a type-only `$context`. |
-| `result` | `(data) => SafeishResult<Data>` | Creates a success value. |
-| `error` | `(code, context, message) => SafeishError<Code, Context>` | Creates an error without a definition. Prefer `defineError`, which keeps codes consistent and runs effects. |
-| `safeish` | `(fn, unhandled?) => (...args) => Output` | Wraps a function that returns results or errors, and converts anything it throws into an unhandled error. |
-| `unhandledCode` | `'~unhandled'` | The default code for thrown exceptions. |
+| Export          | Signature                                                 | Description                                                                                                 |
+| --------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `defineError`   | `({ code, message, effect? }) => ErrorDefinition`         | Creates an error builder. The builder also exposes `code`, `message`, and a type-only `$context`.           |
+| `result`        | `(data) => SafeishResult<Data>`                           | Creates a success value.                                                                                    |
+| `error`         | `(code, context, message) => SafeishError<Code, Context>` | Creates an error without a definition. Prefer `defineError`, which keeps codes consistent and runs effects. |
+| `safeish`       | `(fn, unhandled?) => (...args) => Output`                 | Wraps a function that returns results or errors, and converts anything it throws into an unhandled error.   |
+| `unhandledCode` | `'~unhandled'`                                            | The default code for thrown exceptions.                                                                     |
 
 Types: `SafeishResult<Data>`, `SafeishError<Code, Context>`, `SafeishErrorDefinition<Code, Context>`.
 

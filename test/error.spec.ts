@@ -1,4 +1,4 @@
-import { assertType, expect, it } from 'vitest';
+import { assertType, expect, it } from 'vite-plus/test';
 import { error } from '~/entries/index';
 import type { SafeishError } from '~/src/types';
 

@@ -55,21 +55,24 @@
 
 - The public surface is the single entry point `entries/index.ts`, which
   re-exports `src/`. A new entry point also needs `package.json` `exports`,
-  `jsr.json` `exports`, and `tsdown.config.ts` `entry`.
+  `jsr.json` `exports`, and `pack.entry` in `vite.config.ts`.
 - Import across modules with the `~/src/*` and `~/entries/*` aliases.
 - Public types use the `Safeish` prefix and live in `src/types.ts`.
-- Tests live in `test/*.spec.ts` and import through the entry points, as users
-  would. Typecheck is on: assert inferred types with `assertType` alongside
-  runtime assertions, since the inferred error-code union is the product.
+- Tests live in `test/*.spec.ts`, import test APIs from `vite-plus/test`, and
+  import the library through the entry points, as users would. Typecheck is
+  on: assert inferred types with `assertType` alongside runtime assertions,
+  since the inferred error-code union is the product.
 
 ## Done
 
-- Run checks proportional to the change and report their exact outcome:
-  - `pnpm lint` (Biome; `pnpm lint:fix` to format).
-  - `pnpm vitest run` — `pnpm test` starts watch mode in a terminal. CI does
+- Tooling is Vite+ (`vp`), configured in `vite.config.ts`; its docs are in
+  `node_modules/vite-plus/docs`. Run checks proportional to the change and
+  report their exact outcome:
+  - `pnpm vp check`: format, lint, and type check (`--fix` to fix).
+  - `pnpm vp test run`: plain `vp test` starts watch mode in a terminal. CI does
     not run tests, so run them locally.
-  - `pnpm build && pnpm check-exports` for changes to entries, exports, or
-    build config.
+  - `pnpm vp pack` for changes to entries, exports, or build config. It also runs
+    attw and fails on export resolution problems.
 - A user-facing change needs a changeset (`pnpm changeset`) choosing the semver
   bump. Changesets does not bump `jsr.json`; keep its `version` equal to
   `package.json` when versioning.

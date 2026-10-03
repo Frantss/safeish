@@ -1,14 +1,23 @@
 {
   "name": "safeish",
-  "private": false,
   "version": "0.1.0",
+  "private": false,
   "description": "Safe-ish error handling.",
   "keywords": [
-    "safe",
     "error",
     "handling",
+    "safe",
     "typescript"
   ],
+  "bugs": {
+    "url": "https://github.com/Frantss/safeish/issues"
+  },
+  "license": "MIT",
+  "author": "Frantss <frantss.bongiovanni@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Frantss/safeish"
+  },
   "files": [
     "dist"
   ],
@@ -30,35 +39,23 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
-    "check-exports": "attw --pack . --profile node16",
-    "lint": "biome check",
-    "lint:fix": "biome check --write",
-    "prepublishOnly": "pnpm build && pnpm check-exports",
+    "build": "vp pack",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "prepublishOnly": "pnpm build",
     "version": "changeset",
     "release": "changeset version && changeset publish",
-    "test": "vitest",
-    "test:dev": "vitest --watch"
+    "test": "vp test",
+    "test:dev": "vp test --watch",
+    "prepare": "vp config"
   },
-  "bugs": {
-    "url": "https://github.com/Frantss/safeish/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Frantss/safeish"
-  },
-  "author": "Frantss <frantss.bongiovanni@gmail.com>",
-  "license": "MIT",
-  "packageManager": "pnpm@12.5.1",
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.17.4",
-    "@biomejs/biome": "1.9.4",
+    "@arethetypeswrong/core": "^0.17.4",
     "@changesets/cli": "^2.29.2",
     "@types/bun": "latest",
     "ts-pattern": "^5.7.0",
-    "tsdown": "^0.9.9",
     "typescript": "^5.8.3",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.2"
-  }
+    "vite-plus": "catalog:"
+  },
+  "packageManager": "pnpm@12.5.1"
 }

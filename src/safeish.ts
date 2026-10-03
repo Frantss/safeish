@@ -1,9 +1,5 @@
 import { error } from '~/src/error';
-import type {
-  SafeishError,
-  SafeishErrorDefinition,
-  SafeishResult,
-} from '~/src/types';
+import type { SafeishError, SafeishErrorDefinition, SafeishResult } from '~/src/types';
 
 export const unhandledCode = '~unhandled' as const;
 export type SafeishUnhandledCode = typeof unhandledCode;
@@ -32,10 +28,10 @@ export const safeish = <
     | SafeishResult<unknown>
     | SafeishError<string, unknown>
     | SafeishError<SafeishUnhandledCode, unknown>,
-  Unhandled extends SafeishErrorDefinition<
-    string,
+  Unhandled extends SafeishErrorDefinition<string, unknown> = SafeishErrorDefinition<
+    SafeishUnhandledCode,
     unknown
-  > = SafeishErrorDefinition<SafeishUnhandledCode, unknown>,
+  >,
 >(
   handler: (...args: Input) => Output,
   unhandled?: Unhandled,
@@ -45,11 +41,7 @@ export const safeish = <
       return handler(...args);
     } catch (e) {
       return (unhandled?.(e) ??
-        error(
-          unhandledCode,
-          e,
-          'An unhandled error occurred',
-        )) as unknown as ReturnType<Unhandled>;
+        error(unhandledCode, e, 'An unhandled error occurred')) as unknown as ReturnType<Unhandled>;
     }
   };
 };
